@@ -98,7 +98,7 @@
 
   .phase-badge {
     display: inline-block;
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -393,7 +393,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1.5px solid rgba(255,255,255,0.3) !important;
+    border: 1.5px solid rgba(255,255,255,0.65) !important;
     padding: 0 !important;
     font-size: 1.1rem !important;
   }
@@ -401,7 +401,7 @@
   .nav-btn:hover { border-color: rgba(255,255,255,0.7) !important; }
 
   .slide-counter {
-    color: rgba(255,255,255,0.5);
+    color: rgba(255,255,255,0.75);
     font-size: 0.85rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
@@ -416,7 +416,7 @@
     .pipeline { gap: 4px; }
     .pipeline-step { min-width: 85px; padding: 14px 12px; }
     .pipeline-step-num { font-size: 1.2rem; }
-    .pipeline-step-label { font-size: 0.8rem; }
+    .pipeline-step-label { font-size: 0.875rem; }
     .pipeline-arrow { font-size: 1rem; padding: 0 4px; }
     .gcse-grid { grid-template-columns: 1fr; }
     .pull-quote { font-size: 2rem; }
@@ -430,10 +430,10 @@
   .slide[data-index="6"] { background: linear-gradient(rgba(27,107,125,0.82),rgba(27,107,125,0.82)), url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; }
 
   /* Additional background images */
-  .slide[data-index="2"] { background: linear-gradient(rgba(250,250,248,0.75),rgba(250,250,248,0.75)), url('https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; }
-  .slide[data-index="3"] { background: linear-gradient(rgba(250,250,248,0.75),rgba(250,250,248,0.75)), url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; }
-  .slide[data-index="4"] { background: linear-gradient(rgba(250,250,248,0.75),rgba(250,250,248,0.75)), url('https://images.unsplash.com/photo-1553028826-f4804a6dba3b?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; }
-  .slide[data-index="5"] { background: linear-gradient(rgba(250,250,248,0.75),rgba(250,250,248,0.75)), url('https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; }
+  .slide[data-index="2"] { background: linear-gradient(rgba(250,250,248,0.85),rgba(250,250,248,0.85)), url('https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; }
+  .slide[data-index="3"] { background: linear-gradient(rgba(34,34,34,0.82),rgba(34,34,34,0.82)), url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; }
+  .slide[data-index="4"] { background: linear-gradient(rgba(250,250,248,0.85),rgba(250,250,248,0.85)), url('https://images.unsplash.com/photo-1553028826-f4804a6dba3b?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; }
+  .slide[data-index="5"] { background: linear-gradient(rgba(250,250,248,0.85),rgba(250,250,248,0.85)), url('https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; }
 </style>
 </head>
 <body>
@@ -458,7 +458,7 @@
     <div class="slide-inner">
       <div class="technique-label">Technique 1</div>
       <h2>Multi-Stage Prompting</h2>
-      <p class="body-text centred" style="color: rgba(255,255,255,0.5); margin-bottom: 36px;">Break the entire task into separate prompts. Review between each stage.</p>
+      <p class="body-text centred" style="color: rgba(255,255,255,0.75); margin-bottom: 36px;">Break the entire task into separate prompts. Review between each stage.</p>
       <div class="pipeline">
         <div class="pipeline-step">
           <span class="pipeline-step-num">1</span>
@@ -485,7 +485,7 @@
           <span class="pipeline-step-label">Critique</span>
         </div>
       </div>
-      <p class="body-text centred" style="font-size: 1.1rem; color: rgba(255,255,255,0.4); margin-top: 32px;">Each stage is a checkpoint. Verify before moving on.<br>Don't let the AI run the full pipeline unsupervised.</p>
+      <p class="body-text centred" style="font-size: 1.1rem; color: rgba(255,255,255,0.65); margin-top: 32px;">Each stage is a checkpoint. Verify before moving on.<br>Don't let the AI run the full pipeline unsupervised.</p>
     </div>
   </div>
 
@@ -511,7 +511,7 @@
     <div class="slide-inner">
       <div class="technique-label">Technique 3</div>
       <h2>Constraints and Guardrails</h2>
-      <p class="body-text centred" style="color: rgba(255,255,255,0.5); margin-bottom: 32px;">Tell the AI what <em>not</em> to do. Safety rails for high-stakes work.</p>
+      <p class="body-text centred" style="color: rgba(255,255,255,0.75); margin-bottom: 32px;">Tell the AI what <em>not</em> to do. Safety rails for high-stakes work.</p>
       <ul class="constraint-list">
         <li>"Do not fabricate sources or references."</li>
         <li>"Highlight any uncertainties or assumptions you've made."</li>
@@ -574,7 +574,7 @@
     <div class="slide-inner">
       <div class="phase-badge" style="background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85);">Key Landing Point</div>
       <div class="pull-quote">Plan before you prompt.<br>Review before you proceed.</div>
-      <p class="pull-quote-sub" style="color: rgba(255,255,255,0.4);">The common thread is intentionality. Always keep the human in the loop at every stage.</p>
+      <p class="pull-quote-sub" style="color: rgba(255,255,255,0.65);">The common thread is intentionality. Always keep the human in the loop at every stage.</p>
     </div>
   </div>
 
