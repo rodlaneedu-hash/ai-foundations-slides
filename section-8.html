@@ -100,7 +100,7 @@
 
   .phase-badge {
     display: inline-block;
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -132,15 +132,15 @@
   .bg-green-light .tech-number { color: var(--teal); }
 
   .tech-label {
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-bottom: 32px;
-    opacity: 0.45;
+    opacity: 0.8;
   }
 
-  .bg-charcoal .tech-label { color: var(--green); opacity: 0.6; }
+  .bg-charcoal .tech-label { color: var(--green); opacity: 0.95; }
 
   /* Comparison cards */
   .compare-row {
@@ -178,7 +178,7 @@
   }
 
   .compare-tag {
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -237,7 +237,7 @@
 
   .example-block .compare-tag { color: var(--teal); }
   .bg-charcoal .example-block .compare-tag { color: var(--green); }
-  .bg-green .example-block .compare-tag { color: var(--charcoal); opacity: 0.55; }
+  .bg-green .example-block .compare-tag { color: var(--charcoal); opacity: 0.8; }
 
   .example-block .compare-text { color: var(--charcoal); }
   .bg-charcoal .example-block .compare-text { color: rgba(255,255,255,0.85); }
@@ -262,7 +262,7 @@
   .pull-quote-sub {
     font-size: 1.15rem;
     margin-top: 24px;
-    opacity: 0.45;
+    opacity: 0.8;
     text-align: center;
     max-width: 660px;
     margin-left: auto;
@@ -276,14 +276,14 @@
     display: block;
     margin-bottom: 12px;
     color: var(--charcoal);
-    opacity: 0.7;
+    opacity: 0.95;
   }
 
   /* Progress bar */
   .progress-track {
     position: fixed;
     top: 0; left: 0; right: 0;
-    height: 3px;
+    height: 5px;
     background: rgba(0,0,0,0.1);
     z-index: 200;
   }
@@ -313,7 +313,7 @@
     border: none;
     color: rgba(255,255,255,0.7);
     font-family: 'DM Sans', sans-serif;
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
@@ -344,7 +344,7 @@
 
   .slide-counter {
     color: rgba(255,255,255,0.75);
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     min-width: 56px;
@@ -357,7 +357,7 @@
     h2 { font-size: 1.9rem; }
     .tech-number { font-size: 3.8rem; }
     .compare-row { grid-template-columns: 1fr; gap: 14px; }
-    .compare-text { font-size: 0.95rem; }
+    .compare-text { font-size: 1.05rem; }
     .pull-quote { font-size: 2rem; }
     .example-block { padding: 22px 24px; }
   }
@@ -387,8 +387,8 @@
     <div class="slide-inner">
       <div class="phase-badge" style="background: rgba(0,0,0,0.1); color: var(--charcoal);">Section 8</div>
       <h1>Prompting Essentials</h1>
-      <p class="body-text centred" style="font-size: 1.5rem; opacity: 0.75;">Six Techniques for Effective Prompts</p>
-      <p class="body-text centred" style="font-size: 1.1rem; opacity: 0.5; margin-top: 32px;">Each one closes the gap between vague output and useful output.<br>From Anthropic's prompt engineering guidance.</p>
+      <p class="body-text centred" style="font-size: 1.5rem; opacity: 0.9;">Six Techniques for Effective Prompts</p>
+      <p class="body-text centred" style="font-size: 1.1rem; opacity: 0.8; margin-top: 32px;">Each one closes the gap between vague output and useful output.<br>From Anthropic's prompt engineering guidance.</p>
     </div>
   </div>
 
@@ -477,7 +477,7 @@
     <div class="slide-inner">
       <div class="tech-number">5</div>
       <h2>Ask It to Think First</h2>
-      <div class="tech-label" style="color: var(--teal); opacity: 0.6;">Give it space to reason before responding.</div>
+      <div class="tech-label" style="color: var(--teal); opacity: 0.95;">Give it space to reason before responding.</div>
       <div class="example-block">
         <div class="compare-tag"><span class="tag-dot"></span> Example prompt</div>
         <p class="compare-text">"Before answering, think through this problem carefully. Consider the different factors involved, potential constraints, and various approaches before recommending the best solution."</p>
@@ -504,12 +504,12 @@
     <div class="slide-inner">
       <span class="star-icon">&#9733;</span>
       <h2 style="font-size: 2.6rem;">Secret Weapon</h2>
-      <p class="body-text centred" style="font-size: 1.35rem; opacity: 0.7; margin-bottom: 32px;">Ask the AI to help you write the prompt.</p>
+      <p class="body-text centred" style="font-size: 1.35rem; opacity: 0.95; margin-bottom: 32px;">Ask the AI to help you write the prompt.</p>
       <div class="example-block">
         <div class="compare-tag"><span class="tag-dot"></span> Try this</div>
         <p class="compare-text">"I'm trying to get you to help me with [goal]. I'm not sure how to phrase my request to get the best results. Can you help me craft an effective prompt for this?"</p>
       </div>
-      <p class="body-text centred" style="font-size: 1rem; opacity: 0.45; margin-top: 28px;">The most powerful technique &mdash; and the one most people overlook.</p>
+      <p class="body-text centred" style="font-size: 1rem; opacity: 0.8; margin-top: 28px;">The most powerful technique &mdash; and the one most people overlook.</p>
     </div>
   </div>
 
