@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 9: Advanced Prompting | AI Foundations Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #1B6B7D;
+    --teal-mid: #2A8A9E;
+    --green: #78C7A4;
+    --green-dark: #2D7A54;
+    --green-light: #E6F5EE;
+    --charcoal: #222222;
+    --grey: #4B5563;
+    --warm-white: #FAFAF8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; overflow: hidden; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--charcoal);
+    background: var(--charcoal);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .slides-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+    overflow-y: auto;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  .slide-inner {
+    max-width: 1000px;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Backgrounds */
+  .bg-warm-white { background: var(--warm-white); color: var(--charcoal); }
+  .bg-charcoal { background: var(--charcoal); color: var(--warm-white); }
+  .bg-green { background: var(--green); color: var(--charcoal); }
+  .bg-green-light { background: var(--green-light); color: var(--charcoal); }
+  .bg-teal { background: var(--teal); color: var(--warm-white); }
+
+  /* Typography */
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3.6rem;
+    line-height: 1.15;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.6rem;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+  }
+
+  .body-text {
+    font-size: 1.4rem;
+    line-height: 1.6;
+    max-width: 800px;
+  }
+
+  .centred { margin-left: auto; margin-right: auto; text-align: center; }
+
+  .phase-badge {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 6px 18px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+  }
+
+  .section-num-large {
+    font-family: 'DM Serif Display', serif;
+    font-size: 8rem;
+    line-height: 1;
+    opacity: 0.12;
+    position: absolute;
+    top: 40px;
+    right: 60px;
+  }
+
+  .technique-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+    opacity: 0.5;
+  }
+
+  .bg-charcoal .technique-label { color: var(--green); opacity: 0.7; }
+  .bg-teal .technique-label { color: var(--green); opacity: 0.8; }
+
+  /* Pipeline steps */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    max-width: 920px;
+    margin: 0 auto;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .pipeline-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(120,199,164,0.1);
+    border: 2px solid var(--green);
+    border-radius: 14px;
+    padding: 22px 24px;
+    min-width: 120px;
+    text-align: center;
+  }
+
+  .bg-charcoal .pipeline-step { background: rgba(120,199,164,0.07); }
+
+  .pipeline-step-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: var(--green);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .pipeline-step-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .bg-charcoal .pipeline-step-label { color: var(--warm-white); }
+
+  .pipeline-arrow {
+    font-size: 1.5rem;
+    color: var(--green);
+    opacity: 0.45;
+    padding: 0 10px;
+    flex-shrink: 0;
+  }
+
+  /* Follow-up iteration examples */
+  .iteration-list {
+    list-style: none;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .iteration-list li {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    line-height: 1.55;
+    padding: 16px 24px 16px 56px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    position: relative;
+  }
+
+  .iteration-list li::before {
+    content: attr(data-n);
+    position: absolute;
+    left: 20px;
+    top: 16px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .bg-warm-white .iteration-list li {
+    background: var(--green-light);
+    color: var(--charcoal);
+  }
+
+  .bg-warm-white .iteration-list li::before { color: var(--green-dark); }
+
+  /* Constraint list */
+  .constraint-list {
+    list-style: none;
+    max-width: 740px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .constraint-list li {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    padding: 13px 0 13px 40px;
+    position: relative;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.8);
+  }
+
+  .constraint-list li:last-child { border-bottom: none; }
+
+  .constraint-list li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 22px;
+    width: 18px; height: 2px;
+    background: var(--green);
+  }
+
+  /* GCSE grid */
+  .gcse-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 780px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .gcse-card {
+    border-radius: 16px;
+    padding: 28px 28px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .gcse-card::after {
+    content: attr(data-letter);
+    position: absolute;
+    top: -14px; right: 8px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 6rem;
+    line-height: 1;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+
+  .gcse-card--g { background: var(--green); color: var(--charcoal); }
+  .gcse-card--c { background: var(--teal); color: #fff; }
+  .gcse-card--s { background: var(--teal); color: #fff; }
+  .gcse-card--e { background: var(--green); color: var(--charcoal); }
+
+  .gcse-letter {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .gcse-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .gcse-desc {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    opacity: 0.8;
+  }
+
+  /* Prompt example blocks */
+  .prompt-stack {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: left;
+  }
+
+  .prompt-block {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    padding: 22px 28px;
+    border-radius: 12px;
+    border-left: 4px solid var(--green);
+    background: var(--green-light);
+    color: var(--charcoal);
+  }
+
+  /* Pull quote */
+  .pull-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.8rem;
+    line-height: 1.3;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .bg-charcoal .pull-quote { color: var(--warm-white); }
+  .bg-teal .pull-quote { color: var(--warm-white); }
+
+  .pull-quote-sub {
+    font-size: 1.15rem;
+    margin-top: 24px;
+    opacity: 0.45;
+    text-align: center;
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+
+  /* Progress bar */
+  .progress-track {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: rgba(0,0,0,0.1);
+    z-index: 200;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--green);
+    transition: width 0.5s ease;
+  }
+
+  /* Navigation */
+  .nav-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    background: rgba(34,34,34,0.92);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
+
+  .nav-bar a, .nav-bar button {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
+    padding: 8px 12px;
+  }
+
+  .nav-bar a:hover, .nav-bar button:hover { color: white; }
+
+  .nav-centre {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid rgba(255,255,255,0.3) !important;
+    padding: 0 !important;
+    font-size: 1.1rem !important;
+  }
+
+  .nav-btn:hover { border-color: rgba(255,255,255,0.7) !important; }
+
+  .slide-counter {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    min-width: 56px;
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    .slide { padding: 40px 24px; }
+    h1 { font-size: 2.4rem; }
+    h2 { font-size: 1.9rem; }
+    .pipeline { gap: 4px; }
+    .pipeline-step { min-width: 85px; padding: 14px 12px; }
+    .pipeline-step-num { font-size: 1.2rem; }
+    .pipeline-step-label { font-size: 0.8rem; }
+    .pipeline-arrow { font-size: 1rem; padding: 0 4px; }
+    .gcse-grid { grid-template-columns: 1fr; }
+    .pull-quote { font-size: 2rem; }
+    .iteration-list li { font-size: 0.95rem; }
+    .prompt-block { font-size: 0.9rem; padding: 18px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="slides-wrapper">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide bg-green active" data-index="0">
+    <div class="slide-inner">
+      <div class="phase-badge" style="background: rgba(0,0,0,0.1); color: var(--charcoal);">Section 9</div>
+      <h1>Advanced Prompting</h1>
+      <p class="body-text centred" style="font-size: 1.5rem; opacity: 0.75;">Where the real productivity gains live.</p>
+      <p class="body-text centred" style="font-size: 1.1rem; opacity: 0.5; margin-top: 32px;">Multi-stage work. Iteration. Constraints. Diagnostics.<br>Developed from GovHub's advanced prompting materials.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Multi-stage prompting -->
+  <div class="slide bg-charcoal" data-index="1">
+    <div class="section-num-large" style="color: rgba(120,199,164,0.06);">1</div>
+    <div class="slide-inner">
+      <div class="technique-label">Technique 1</div>
+      <h2>Multi-Stage Prompting</h2>
+      <p class="body-text centred" style="color: rgba(255,255,255,0.5); margin-bottom: 36px;">Break the entire task into separate prompts. Review between each stage.</p>
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <span class="pipeline-step-num">1</span>
+          <span class="pipeline-step-label">Scan</span>
+        </div>
+        <span class="pipeline-arrow">&#8594;</span>
+        <div class="pipeline-step">
+          <span class="pipeline-step-num">2</span>
+          <span class="pipeline-step-label">Extract</span>
+        </div>
+        <span class="pipeline-arrow">&#8594;</span>
+        <div class="pipeline-step">
+          <span class="pipeline-step-num">3</span>
+          <span class="pipeline-step-label">Compare</span>
+        </div>
+        <span class="pipeline-arrow">&#8594;</span>
+        <div class="pipeline-step">
+          <span class="pipeline-step-num">4</span>
+          <span class="pipeline-step-label">Draft</span>
+        </div>
+        <span class="pipeline-arrow">&#8594;</span>
+        <div class="pipeline-step">
+          <span class="pipeline-step-num">5</span>
+          <span class="pipeline-step-label">Critique</span>
+        </div>
+      </div>
+      <p class="body-text centred" style="font-size: 1.1rem; color: rgba(255,255,255,0.4); margin-top: 32px;">Each stage is a checkpoint. Verify before moving on.<br>Don't let the AI run the full pipeline unsupervised.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Iteration as a habit -->
+  <div class="slide bg-warm-white" data-index="2">
+    <div class="section-num-large" style="color: rgba(120,199,164,0.1);">2</div>
+    <div class="slide-inner">
+      <div class="technique-label" style="color: var(--teal);">Technique 2</div>
+      <h2>Iteration as a Habit</h2>
+      <p class="body-text centred" style="color: var(--grey); margin-bottom: 32px;">The best results come from the third or fourth exchange, not the first.</p>
+      <ul class="iteration-list">
+        <li data-n="1">"That's too long. Cut it to half the length and keep only the strongest points."</li>
+        <li data-n="2">"The tone is too formal. Rewrite as if explaining this to a colleague over coffee."</li>
+        <li data-n="3">"You missed [specific thing]. Add it and restructure around it."</li>
+        <li data-n="4">"That's good. Now challenge your own argument &mdash; what's the strongest counterpoint?"</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Constraints and guardrails -->
+  <div class="slide bg-charcoal" data-index="3">
+    <div class="section-num-large" style="color: rgba(120,199,164,0.06);">3</div>
+    <div class="slide-inner">
+      <div class="technique-label">Technique 3</div>
+      <h2>Constraints and Guardrails</h2>
+      <p class="body-text centred" style="color: rgba(255,255,255,0.5); margin-bottom: 32px;">Tell the AI what <em>not</em> to do. Safety rails for high-stakes work.</p>
+      <ul class="constraint-list">
+        <li>"Do not fabricate sources or references."</li>
+        <li>"Highlight any uncertainties or assumptions you've made."</li>
+        <li>"Flag areas that require human review before this goes further."</li>
+        <li>"If you don't have enough information to answer confidently, say so."</li>
+        <li>"Do not include personal opinions or speculative claims."</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: GCSE diagnostic -->
+  <div class="slide bg-green-light" data-index="4">
+    <div class="slide-inner">
+      <div class="technique-label" style="color: var(--teal);">Technique 4</div>
+      <h2>The Diagnostic Habit</h2>
+      <p class="body-text centred" style="color: var(--grey); margin-bottom: 32px; font-size: 1.2rem;">When output is weak, ask which letter is missing.</p>
+      <div class="gcse-grid">
+        <div class="gcse-card gcse-card--g" data-letter="G">
+          <div class="gcse-letter">G</div>
+          <div class="gcse-name">Goal &amp; Role</div>
+          <div class="gcse-desc">What do you want? What role should the AI adopt? Sharpen the action verb.</div>
+        </div>
+        <div class="gcse-card gcse-card--c" data-letter="C">
+          <div class="gcse-letter">C</div>
+          <div class="gcse-name">Context</div>
+          <div class="gcse-desc">Who, why, what situation? Add the background so it can tailor its response.</div>
+        </div>
+        <div class="gcse-card gcse-card--s" data-letter="S">
+          <div class="gcse-letter">S</div>
+          <div class="gcse-name">Source</div>
+          <div class="gcse-desc">Point it to specific content. Don't let the AI guess when you have the material.</div>
+        </div>
+        <div class="gcse-card gcse-card--e" data-letter="E">
+          <div class="gcse-letter">E</div>
+          <div class="gcse-name">Expectation</div>
+          <div class="gcse-desc">What should the output look like? Specify format, tone, length, structure.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Ask AI to improve your approach -->
+  <div class="slide bg-warm-white" data-index="5">
+    <div class="section-num-large" style="color: rgba(120,199,164,0.1);">5</div>
+    <div class="slide-inner">
+      <div class="technique-label" style="color: var(--teal);">Technique 5</div>
+      <h2>Ask the AI to Improve Your Approach</h2>
+      <p class="body-text centred" style="color: var(--grey); margin-bottom: 32px;">Turn the AI into a collaborator on the process, not just the content.</p>
+      <div class="prompt-stack">
+        <div class="prompt-block">"I need to analyse these three policy documents. What would be the most effective sequence of prompts to do this thoroughly?"</div>
+        <div class="prompt-block">"I've written this prompt but the output isn't what I need. What's wrong with my prompt and how would you improve it?"</div>
+        <div class="prompt-block">"Suggest three ways I could break this task down into smaller steps."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Landing point -->
+  <div class="slide bg-teal" data-index="6">
+    <div class="section-num-large" style="color: rgba(255,255,255,0.05);">9</div>
+    <div class="slide-inner">
+      <div class="phase-badge" style="background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85);">Key Landing Point</div>
+      <div class="pull-quote">Plan before you prompt.<br>Review before you proceed.</div>
+      <p class="pull-quote-sub" style="color: rgba(255,255,255,0.4);">The common thread is intentionality. Always keep the human in the loop at every stage.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<nav class="nav-bar">
+  <a href="../index.html">&larr; Back to Journey</a>
+  <div class="nav-centre">
+    <button class="nav-btn" id="prevBtn" aria-label="Previous slide">&larr;</button>
+    <span class="slide-counter" id="slideCounter">1 / 7</span>
+    <button class="nav-btn" id="nextBtn" aria-label="Next slide">&rarr;</button>
+  </div>
+  <span style="width: 120px;"></span>
+</nav>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const counter = document.getElementById('slideCounter');
+  const progress = document.getElementById('progressBar');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function goTo(index) {
+    if (index < 0 || index >= total) return;
+    current = index;
+
+    slides.forEach(function(s, i) {
+      s.classList.remove('active', 'exit-left');
+      if (i < current) s.style.transform = 'translateX(-60px)';
+      else if (i > current) s.style.transform = 'translateX(60px)';
+    });
+
+    requestAnimationFrame(function() {
+      slides[current].classList.add('active');
+      slides[current].style.transform = '';
+    });
+
+    counter.textContent = (current + 1) + ' / ' + total;
+    progress.style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+  });
+
+  var touchStartX = 0;
+  document.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', function(e) {
+    var diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 60) { diff > 0 ? next() : prev(); }
+  });
+
+  progress.style.width = (1 / total * 100) + '%';
+})();
+</script>
+
+</body>
+</html>

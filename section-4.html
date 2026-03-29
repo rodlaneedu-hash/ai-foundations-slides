@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 4: When to Use It — and When Not To | AI Foundations Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #1B6B7D;
+    --green: #78C7A4;
+    --green-dark: #2D7A54;
+    --green-bg: #E6F5EE;
+    --charcoal: #222222;
+    --grey: #4B5563;
+    --warm-white: #FAFAF8;
+    --amber: #A67B00;
+    --amber-light: #FFF8E7;
+    --red: #C25B4A;
+    --red-light: #FDF0EE;
+    --red-dark: #9A3A2E;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; overflow: hidden; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--charcoal);
+    background: var(--charcoal);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Slide container */
+  .slides-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+    overflow-y: auto;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  .slide.exit-left {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  .slide-inner {
+    max-width: 1000px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .slide-inner.left-align {
+    text-align: left;
+  }
+
+  /* Typography */
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3.6rem;
+    line-height: 1.15;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.8rem;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    line-height: 1.25;
+    margin-bottom: 16px;
+  }
+
+  .body-text {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    max-width: 800px;
+  }
+
+  .body-text.centred {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .subtitle {
+    font-size: 1.3rem;
+    font-weight: 500;
+    line-height: 1.5;
+    opacity: 0.85;
+  }
+
+  /* Phase badge */
+  .phase-badge {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 6px 18px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+  }
+
+  /* Section number */
+  .section-num-large {
+    font-family: 'DM Serif Display', serif;
+    font-size: 8rem;
+    line-height: 1;
+    opacity: 0.12;
+    position: absolute;
+    top: 40px;
+    right: 60px;
+  }
+
+  /* Bullet list */
+  .slide-bullets {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .slide-bullets li {
+    font-size: 1.4rem;
+    line-height: 1.5;
+    padding: 14px 0;
+    padding-left: 32px;
+    position: relative;
+  }
+
+  .slide-bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 22px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .slide-bullets.green-bullets li::before { background: var(--green); }
+  .slide-bullets.red-bullets li::before { background: var(--red); }
+  .slide-bullets.amber-bullets li::before { background: var(--amber); }
+
+  .slide-bullets li strong {
+    font-weight: 700;
+  }
+
+  /* Pull quote */
+  .pull-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    line-height: 1.35;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    padding-left: 32px;
+  }
+
+  .pull-quote::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    border-radius: 3px;
+  }
+
+  .pull-quote.amber-bar::before { background: var(--amber); }
+  .pull-quote.green-bar::before { background: var(--green); }
+  .pull-quote.red-bar::before { background: var(--red); }
+
+  /* Callout card */
+  .callout-card {
+    border-radius: 16px;
+    padding: 36px 44px;
+    text-align: left;
+    max-width: 800px;
+    margin: 24px auto 0;
+  }
+
+  .callout-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+  }
+
+  .callout-card p {
+    font-size: 1.2rem;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* Use/Don't use signal */
+  .signal-tag {
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    padding: 8px 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+  }
+
+  .signal-go { background: var(--green); color: white; }
+  .signal-stop { background: var(--red); color: white; }
+
+  /* Big icon text */
+  .icon-text {
+    font-size: 4rem;
+    margin-bottom: 20px;
+  }
+
+  /* Navigation */
+  .nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    background: rgba(34,34,34,0.92);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
+
+  .nav-bar a, .nav-bar button {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
+    padding: 8px 12px;
+  }
+
+  .nav-bar a:hover, .nav-bar button:hover {
+    color: white;
+  }
+
+  .nav-centre {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid rgba(255,255,255,0.3) !important;
+    padding: 0 !important;
+    font-size: 1.1rem !important;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .nav-btn:hover {
+    border-color: rgba(255,255,255,0.7) !important;
+  }
+
+  .slide-counter {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    min-width: 48px;
+    text-align: center;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--amber);
+    transition: width 0.4s ease;
+    z-index: 101;
+  }
+
+  /* Slide-specific backgrounds */
+  .bg-warm-white { background: var(--warm-white); color: var(--charcoal); }
+  .bg-charcoal { background: var(--charcoal); color: var(--warm-white); }
+  .bg-amber { background: var(--amber); color: white; }
+  .bg-green-soft { background: #F0FAF5; color: var(--charcoal); }
+  .bg-red-soft { background: #FDF5F3; color: var(--charcoal); }
+  .bg-green-deep { background: var(--green-dark); color: white; }
+  .bg-red-deep { background: var(--red); color: white; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .slide { padding: 40px 28px 80px; }
+    h1 { font-size: 2.4rem; }
+    h2 { font-size: 2rem; }
+    h3 { font-size: 1.5rem; }
+    .body-text { font-size: 1.2rem; }
+    .slide-bullets li { font-size: 1.15rem; }
+    .pull-quote { font-size: 1.8rem; }
+    .section-num-large { font-size: 5rem; top: 24px; right: 28px; }
+    .callout-card { padding: 24px 28px; }
+    .icon-text { font-size: 3rem; }
+  }
+
+  @media (max-width: 480px) {
+    .slide { padding: 32px 20px 80px; }
+    h1 { font-size: 1.9rem; }
+    h2 { font-size: 1.6rem; }
+    .pull-quote { font-size: 1.5rem; }
+    .slide-bullets li { font-size: 1.05rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="slides-wrapper" id="slidesWrapper">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide bg-amber active" data-index="0">
+    <div class="section-num-large" style="color: rgba(255,255,255,0.15);">4</div>
+    <div class="slide-inner">
+      <div class="phase-badge" style="background: rgba(255,255,255,0.2); color: white;">Phase 2: Decide</div>
+      <h1>When to Use It<br>&mdash; and When Not To</h1>
+      <p class="subtitle" style="max-width: 640px; margin: 0 auto;">Turning strengths and limitations<br>into a practical decision framework.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: USE IT — First draft, language & structure -->
+  <div class="slide bg-green-soft" data-index="1">
+    <div class="section-num-large" style="color: var(--green); opacity: 0.08;">4</div>
+    <div class="slide-inner left-align">
+      <div class="signal-tag signal-go">Use it when</div>
+      <h2 style="color: var(--green-dark);">First draft. Language. Structure.</h2>
+      <ul class="slide-bullets green-bullets">
+        <li><strong>You need a starting point, not a final product.</strong><br>Blank page to working draft in seconds.</li>
+        <li><strong>The task is about language and structure.</strong><br>Summarising, reformatting, translating, adjusting tone &mdash; these play directly to its strengths.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: USE IT — Verify, think through options, low stakes -->
+  <div class="slide bg-green-soft" data-index="2">
+    <div class="section-num-large" style="color: var(--green); opacity: 0.08;">4</div>
+    <div class="slide-inner left-align">
+      <div class="signal-tag signal-go">Use it when</div>
+      <h2 style="color: var(--green-dark);">You can check the output.</h2>
+      <ul class="slide-bullets green-bullets">
+        <li><strong>You can verify the result.</strong><br>You have the expertise to spot what's wrong. AI does the heavy lifting; you do quality control.</li>
+        <li><strong>You want to think through options.</strong><br>"Give me five ways I could approach this." Material to react to beats a blank page.</li>
+        <li><strong>The stakes are low to moderate.</strong><br>Brainstorming, internal planning, early-stage drafts &mdash; mistakes are easy to catch and cheap to fix.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: DON'T — Can't verify -->
+  <div class="slide bg-red-soft" data-index="3">
+    <div class="section-num-large" style="color: var(--red); opacity: 0.08;">4</div>
+    <div class="slide-inner">
+      <div class="signal-tag signal-stop">Don't use it when</div>
+      <h2 style="color: var(--red-dark);">You can't verify the output.</h2>
+      <div class="pull-quote red-bar" style="color: var(--red-dark); text-align: left;">
+        If you don't have the expertise to check the result, you have no way of knowing whether it's useful &mdash; or dangerously wrong.
+      </div>
+      <div class="callout-card" style="background: var(--red); color: white; margin-top: 40px;">
+        <h3 style="color: rgba(255,255,255,0.8); font-family: 'DM Sans', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem;">The single biggest risk</h3>
+        <p>It sounds confident whether it's right or wrong. If you can't tell the difference, don't use it.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: DON'T — Personal data, high stakes -->
+  <div class="slide bg-red-soft" data-index="4">
+    <div class="section-num-large" style="color: var(--red); opacity: 0.08;">4</div>
+    <div class="slide-inner left-align">
+      <div class="signal-tag signal-stop">Don't use it when</div>
+      <h2 style="color: var(--red-dark);">Personal data. High stakes.</h2>
+      <ul class="slide-bullets red-bullets">
+        <li><strong>The task involves personal or sensitive data.</strong><br>What you type may be stored or used for training. Confidential means don't include it.</li>
+        <li><strong>The stakes are high and the output goes straight out.</strong><br>Legal documents, medical advice, financial decisions &mdash; a plausible-sounding error can cause real harm.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: DON'T — Guaranteed accuracy, judgment about people -->
+  <div class="slide bg-red-soft" data-index="5">
+    <div class="section-num-large" style="color: var(--red); opacity: 0.08;">4</div>
+    <div class="slide-inner left-align">
+      <div class="signal-tag signal-stop">Don't use it when</div>
+      <h2 style="color: var(--red-dark);">Accuracy required. Judgment about people.</h2>
+      <ul class="slide-bullets red-bullets">
+        <li><strong>You need guaranteed accuracy.</strong><br>It doesn't look things up. It doesn't verify. If you need a fact, a citation, or a number &mdash; go to the source.</li>
+        <li><strong>The task requires judgment about people.</strong><br>Hiring, performance assessments, learning support &mdash; these need human understanding of context, relationships, and consequences.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Key landing point -->
+  <div class="slide bg-charcoal" data-index="6">
+    <div class="section-num-large" style="color: rgba(255,255,255,0.06);">4</div>
+    <div class="slide-inner">
+      <div class="phase-badge" style="background: rgba(166,123,0,0.25); color: #D4A630;">Key Landing Point</div>
+      <div class="pull-quote amber-bar" style="color: var(--warm-white); text-align: left; font-size: 2.2rem;">
+        The decision isn't "should I use AI or not?" &mdash; it's <em>"does this task match what AI is good at, and can I manage the limitations?"</em>
+      </div>
+      <p class="body-text" style="color: rgba(255,255,255,0.65); margin-top: 36px; max-width: 700px; margin-left: auto; margin-right: auto; text-align: center; font-size: 1.3rem;">
+        If you can verify the output and the stakes allow for imperfection, it's probably a good fit.<br>If you can't check it or the cost of error is high &mdash; keep a human in the driver's seat.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation bar -->
+<nav class="nav-bar">
+  <a href="../index.html">&larr; Back to Journey</a>
+  <div class="nav-centre">
+    <button class="nav-btn" id="prevBtn" aria-label="Previous slide">&larr;</button>
+    <span class="slide-counter" id="slideCounter">1 / 7</span>
+    <button class="nav-btn" id="nextBtn" aria-label="Next slide">&rarr;</button>
+  </div>
+  <span style="width: 120px;"></span>
+</nav>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const counter = document.getElementById('slideCounter');
+  const progress = document.getElementById('progressBar');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function goTo(index) {
+    if (index < 0 || index >= total) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit-left');
+    setTimeout(() => slides[current === index ? current : (current)].classList.remove('exit-left'), 500);
+
+    const old = current;
+    current = index;
+
+    // Reset transition classes
+    slides.forEach((s, i) => {
+      s.classList.remove('active', 'exit-left');
+      if (i < current) s.style.transform = 'translateX(-60px)';
+      else if (i > current) s.style.transform = 'translateX(60px)';
+    });
+
+    // Small delay then activate
+    requestAnimationFrame(() => {
+      slides[current].classList.add('active');
+      slides[current].style.transform = '';
+    });
+
+    counter.textContent = (current + 1) + ' / ' + total;
+    progress.style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', function(e) {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 60) { diff > 0 ? next() : prev(); }
+  });
+
+  // Init
+  progress.style.width = (1 / total * 100) + '%';
+})();
+</script>
+
+</body>
+</html>

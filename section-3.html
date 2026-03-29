@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 3: What It's Good At — AI Foundations Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #1B6B7D;
+    --teal-dark: #145662;
+    --teal-light: #E8F4F6;
+    --green: #78C7A4;
+    --green-light: #E6F5EE;
+    --charcoal: #222222;
+    --grey: #4B5563;
+    --warm-white: #FAFAF8;
+    --amber: #A67B00;
+    --amber-light: #FFF8E7;
+    --flip-bg: #FEF3E2;
+    --flip-border: #E8C870;
+    --flip-text: #7A5C00;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { overflow: hidden; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--warm-white);
+    color: var(--charcoal);
+    overflow: hidden;
+  }
+
+  /* ---- SLIDE SYSTEM ---- */
+  .deck {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 80px 80px;
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  /* ---- NAV ---- */
+  .nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: white;
+    border-top: 1px solid #E5E7EB;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    z-index: 100;
+  }
+
+  .nav-bar a.back {
+    font-size: 0.82rem;
+    color: var(--teal);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .nav-bar a.back:hover { text-decoration: underline; }
+
+  .nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-controls button {
+    background: none;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    color: var(--grey);
+  }
+
+  .nav-controls button:hover {
+    background: var(--teal-light);
+    border-color: var(--teal);
+    color: var(--teal);
+  }
+
+  .nav-controls button:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .nav-controls button:disabled:hover {
+    background: none;
+    border-color: #D1D5DB;
+    color: var(--grey);
+  }
+
+  .progress {
+    font-size: 0.82rem;
+    color: var(--grey);
+    font-weight: 600;
+    min-width: 48px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .progress-bar-track {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #E5E7EB;
+    z-index: 100;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--teal);
+    transition: width 0.4s ease;
+  }
+
+  /* ---- TYPOGRAPHY ---- */
+  h1.slide-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3.2rem;
+    color: var(--teal);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+    text-align: center;
+    max-width: 800px;
+  }
+
+  .slide-body {
+    font-size: 1.4rem;
+    color: var(--grey);
+    line-height: 1.6;
+    max-width: 700px;
+    text-align: center;
+  }
+
+  .slide-body strong { color: var(--charcoal); font-weight: 700; }
+
+  .phase-badge {
+    display: inline-block;
+    background: var(--teal-light);
+    color: var(--teal);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+  }
+
+  .big-number {
+    font-family: 'DM Serif Display', serif;
+    font-size: 8rem;
+    color: var(--teal);
+    opacity: 0.1;
+    position: absolute;
+    top: 30px;
+    right: 56px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  /* ---- STRENGTH + FLIP CARD ---- */
+  .sf-card {
+    max-width: 780px;
+    width: 100%;
+  }
+
+  .strength-section {
+    background: white;
+    border: 2px solid #E5E7EB;
+    border-radius: 16px 16px 0 0;
+    padding: 40px 48px 32px;
+    text-align: left;
+  }
+
+  .strength-section .sf-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--green-light);
+    margin-bottom: 16px;
+  }
+
+  .strength-section .sf-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--teal);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .strength-section h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem;
+    color: var(--charcoal);
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .strength-section p {
+    font-size: 1.25rem;
+    color: var(--grey);
+    line-height: 1.55;
+  }
+
+  .flip-section {
+    background: var(--flip-bg);
+    border: 2px solid var(--flip-border);
+    border-top: none;
+    border-radius: 0 0 16px 16px;
+    padding: 28px 48px 32px;
+    text-align: left;
+  }
+
+  .flip-section .flip-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--amber);
+    margin-bottom: 10px;
+  }
+
+  .flip-section p {
+    font-size: 1.15rem;
+    color: var(--flip-text);
+    line-height: 1.55;
+  }
+
+  .flip-section strong {
+    color: #5A4200;
+    font-weight: 700;
+  }
+
+  /* ---- LANDING SLIDE ---- */
+  .landing-card {
+    background: var(--teal);
+    border-radius: 20px;
+    padding: 56px 64px;
+    max-width: 780px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .landing-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    color: white;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+
+  .landing-card p {
+    font-size: 1.25rem;
+    color: rgba(255,255,255,0.88);
+    line-height: 1.6;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  .landing-card p + p { margin-top: 16px; }
+
+  .landing-card .throughline {
+    display: inline-block;
+    margin-top: 28px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 100px;
+    padding: 10px 24px;
+    font-size: 1.05rem;
+    color: white;
+    font-weight: 700;
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 768px) {
+    .slide { padding: 32px 20px 72px; }
+    h1.slide-title { font-size: 2.2rem; }
+    .slide-body { font-size: 1.15rem; }
+    .strength-section { padding: 28px 24px 24px; }
+    .strength-section h2 { font-size: 1.7rem; }
+    .strength-section p { font-size: 1.05rem; }
+    .flip-section { padding: 20px 24px 24px; }
+    .flip-section p { font-size: 1rem; }
+    .big-number { font-size: 5rem; top: 16px; right: 20px; }
+    .landing-card { padding: 36px 28px; }
+    .landing-card h2 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar-track">
+  <div class="progress-bar-fill" id="progressFill"></div>
+</div>
+
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: TITLE -->
+  <div class="slide active" data-slide="0">
+    <div class="big-number">3</div>
+    <span class="phase-badge">Phase 1 &middot; Understand</span>
+    <h1 class="slide-title">What It's Good At &mdash; and Where It Falls Over</h1>
+    <p class="slide-body">Every strength has a flip side. Same mechanics, different outcome depending on how you use it.</p>
+  </div>
+
+  <!-- SLIDE 2: FAST & SCALABLE -->
+  <div class="slide" data-slide="1">
+    <div class="sf-card">
+      <div class="strength-section">
+        <div class="sf-icon">
+          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h2>It's fast and scalable</h2>
+        <p>It can draft, summarise, translate, or restructure content in seconds. That's genuinely useful.</p>
+      </div>
+      <div class="flip-section">
+        <div class="flip-label">The flip side</div>
+        <p><strong>Fast doesn't mean right.</strong> Speed comes from predicting the next word &mdash; not from checking whether the output is accurate.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: VERSATILE -->
+  <div class="slide" data-slide="2">
+    <div class="sf-card">
+      <div class="strength-section">
+        <div class="sf-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+        </div>
+        <h2>It's versatile</h2>
+        <p>It can work across writing, planning, analysis, code, and brainstorming &mdash; trained on text spanning many domains.</p>
+      </div>
+      <div class="flip-section">
+        <div class="flip-label">The flip side</div>
+        <p><strong>It knows nothing about you</strong> &mdash; your organisation, your role, your context. Unless you provide that context, every response is generic. This is why the quality of your prompt matters so much.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: FLUENT -->
+  <div class="slide" data-slide="3">
+    <div class="sf-card">
+      <div class="strength-section">
+        <div class="sf-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <h2>It's fluent</h2>
+        <p>It produces natural, well-structured language. This is what it's best at &mdash; language patterns are exactly what it was trained on.</p>
+      </div>
+      <div class="flip-section">
+        <div class="flip-label">The flip side</div>
+        <p><strong>Sounding right and being right are completely unrelated.</strong> A confidently written paragraph full of errors looks identical to one that's accurate. You can't tell the difference by reading the tone.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: ALWAYS AVAILABLE -->
+  <div class="slide" data-slide="4">
+    <div class="sf-card">
+      <div class="strength-section">
+        <div class="sf-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <h2>It's always available</h2>
+        <p>It doesn't get tired, it doesn't have a bad day, and there's no wait time.</p>
+      </div>
+      <div class="flip-section">
+        <div class="flip-label">The flip side</div>
+        <p><strong>It has no judgment.</strong> It can't tell when it's out of its depth. It won't say "I don't know enough" &mdash; it'll just produce something plausible and move on.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: RECOMBINES IDEAS -->
+  <div class="slide" data-slide="5">
+    <div class="sf-card">
+      <div class="strength-section">
+        <div class="sf-icon">
+          <svg viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        </div>
+        <h2>It recombines ideas in useful ways</h2>
+        <p>Trained on a wide range of text, it can make unexpected connections &mdash; suggesting approaches you might not have considered.</p>
+      </div>
+      <div class="flip-section">
+        <div class="flip-label">The flip side</div>
+        <p><strong>It's remixing patterns, not inventing.</strong> It mixes and matches existing ideas, not comes up with new ones. There's no intent or understanding behind the combinations.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: ADAPTS WITHIN A CONVERSATION -->
+  <div class="slide" data-slide="6">
+    <div class="sf-card">
+      <div class="strength-section">
+        <div class="sf-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </div>
+        <h2>It adapts within a conversation</h2>
+        <p>Give it feedback and it adjusts &mdash; change the tone, restructure the format, go deeper on one section.</p>
+      </div>
+      <div class="flip-section">
+        <div class="flip-label">The flip side</div>
+        <p><strong>That learning disappears when the conversation ends.</strong> Next time you start a chat, it has no memory of what you discussed. It starts fresh every time.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: WORKS WITH A LOT OF INFORMATION -->
+  <div class="slide" data-slide="7">
+    <div class="sf-card">
+      <div class="strength-section">
+        <div class="sf-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        </div>
+        <h2>It can work with a lot of information at once</h2>
+        <p>Paste in long documents, data, meeting notes, or policies. Most modern tools handle tens of thousands of words in a single conversation.</p>
+      </div>
+      <div class="flip-section">
+        <div class="flip-label">The flip side</div>
+        <p><strong>There's a ceiling.</strong> Every tool has a limit. If you have a very long conversation, it quietly forgets the earliest parts &mdash; and it won't tell you it's happened.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: KEY LANDING POINT -->
+  <div class="slide" data-slide="8">
+    <div class="landing-card">
+      <h2>Baked into the technology's design</h2>
+      <p>The strengths are real &mdash; this is a genuinely useful tool.</p>
+      <p>The limitations aren't bugs that will be fixed in the next update. They're baked into how it works.</p>
+      <p style="margin-top: 20px; color: white; font-weight: 600;">Using it well means leaning into what it's good at &mdash; while designing around where it falls over.</p>
+      <div class="throughline">Human in the loop. Every time.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAVIGATION -->
+<nav class="nav-bar">
+  <a href="index.html" class="back">&larr; Back to Journey</a>
+  <div class="nav-controls">
+    <button id="prevBtn" aria-label="Previous slide" disabled>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="progress" id="progressText">1 / 9</span>
+    <button id="nextBtn" aria-label="Next slide">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M7 4l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</nav>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const progressText = document.getElementById('progressText');
+  const progressFill = document.getElementById('progressFill');
+
+  function goTo(index) {
+    if (index < 0 || index >= total) return;
+    slides.forEach((s, i) => {
+      s.classList.remove('active');
+      if (i === index) s.classList.add('active');
+    });
+    current = index;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+    progressText.textContent = (current + 1) + ' / ' + total;
+    progressFill.style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goTo(current - 1); }
+  });
+
+  document.getElementById('deck').addEventListener('click', (e) => {
+    if (e.target.closest('.nav-bar')) return;
+    const x = e.clientX;
+    if (x < window.innerWidth * 0.3) goTo(current - 1);
+    else goTo(current + 1);
+  });
+
+  progressFill.style.width = (1 / total * 100) + '%';
+})();
+</script>
+
+</body>
+</html>

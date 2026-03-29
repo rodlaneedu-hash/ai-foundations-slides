@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 6: Risks and How to Manage Them | AI Foundations Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #1B6B7D;
+    --teal-mid: #2A8A9E;
+    --green: #78C7A4;
+    --green-dark: #2D7A54;
+    --charcoal: #222222;
+    --grey: #4B5563;
+    --warm-white: #FAFAF8;
+    --amber: #A67B00;
+    --red: #C25B4A;
+    --red-dark: #9A3A2E;
+    --red-deep: #7A2E24;
+    --red-soft-bg: #FDF5F3;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; overflow: hidden; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--charcoal);
+    background: var(--charcoal);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .slides-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+    overflow-y: auto;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  .slide-inner {
+    max-width: 1000px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .slide-inner.left-align { text-align: left; }
+
+  /* Typography */
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3.6rem;
+    line-height: 1.15;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3rem;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    line-height: 1.25;
+    margin-bottom: 16px;
+  }
+
+  .body-text {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    max-width: 800px;
+  }
+
+  .subtitle {
+    font-size: 1.3rem;
+    font-weight: 500;
+    line-height: 1.5;
+    opacity: 0.85;
+  }
+
+  /* Phase badge */
+  .phase-badge {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 6px 18px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+  }
+
+  /* Section number watermark */
+  .section-num-large {
+    font-family: 'DM Serif Display', serif;
+    font-size: 8rem;
+    line-height: 1;
+    opacity: 0.12;
+    position: absolute;
+    top: 40px;
+    right: 60px;
+  }
+
+  /* Risk slide layout */
+  .risk-layout {
+    max-width: 860px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .risk-number {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--red);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .risk-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.8rem;
+    color: var(--charcoal);
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  .risk-desc {
+    font-size: 1.35rem;
+    line-height: 1.6;
+    color: var(--grey);
+    max-width: 760px;
+    margin-bottom: 32px;
+  }
+
+  /* Action callout */
+  .action-card {
+    background: var(--red);
+    color: white;
+    border-radius: 16px;
+    padding: 28px 36px;
+    max-width: 760px;
+  }
+
+  .action-card-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.7;
+    margin-bottom: 10px;
+  }
+
+  .action-card p {
+    font-size: 1.2rem;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* Alt action card for variety */
+  .action-card-alt {
+    background: rgba(194,91,74,0.08);
+    border: 2px solid rgba(194,91,74,0.2);
+    border-radius: 16px;
+    padding: 28px 36px;
+    max-width: 760px;
+  }
+
+  .action-card-alt .action-card-label {
+    color: var(--red);
+  }
+
+  .action-card-alt p {
+    font-size: 1.2rem;
+    line-height: 1.55;
+    color: var(--charcoal);
+    margin: 0;
+  }
+
+  /* Pull quote */
+  .pull-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    line-height: 1.35;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    padding-left: 32px;
+    text-align: left;
+  }
+
+  .pull-quote::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    border-radius: 3px;
+  }
+
+  .pull-quote.red-bar::before { background: var(--red); }
+
+  /* Risk counter badge */
+  .risk-counter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--red);
+    color: white;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+
+  /* Navigation */
+  .nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    background: rgba(34,34,34,0.92);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
+
+  .nav-bar a, .nav-bar button {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
+    padding: 8px 12px;
+  }
+
+  .nav-bar a:hover, .nav-bar button:hover { color: white; }
+
+  .nav-centre {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid rgba(255,255,255,0.3) !important;
+    padding: 0 !important;
+    font-size: 1.1rem !important;
+  }
+
+  .nav-btn:hover { border-color: rgba(255,255,255,0.7) !important; }
+
+  .slide-counter {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    min-width: 48px;
+    text-align: center;
+  }
+
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--red);
+    transition: width 0.4s ease;
+    z-index: 101;
+  }
+
+  /* Backgrounds */
+  .bg-warm-white { background: var(--warm-white); color: var(--charcoal); }
+  .bg-charcoal { background: var(--charcoal); color: var(--warm-white); }
+  .bg-red { background: var(--red); color: white; }
+  .bg-red-soft { background: var(--red-soft-bg); color: var(--charcoal); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .slide { padding: 40px 28px 80px; }
+    h1 { font-size: 2.4rem; }
+    h2 { font-size: 2rem; }
+    .risk-title { font-size: 2rem; }
+    .risk-desc { font-size: 1.15rem; }
+    .body-text { font-size: 1.2rem; }
+    .section-num-large { font-size: 5rem; top: 24px; right: 28px; }
+    .pull-quote { font-size: 1.8rem; }
+    .action-card, .action-card-alt { padding: 22px 24px; }
+    .action-card p, .action-card-alt p { font-size: 1.05rem; }
+  }
+
+  @media (max-width: 480px) {
+    .slide { padding: 32px 20px 80px; }
+    h1 { font-size: 1.9rem; }
+    .risk-title { font-size: 1.7rem; }
+    .pull-quote { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="slides-wrapper" id="slidesWrapper">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide bg-red active" data-index="0">
+    <div class="section-num-large" style="color: rgba(255,255,255,0.12);">6</div>
+    <div class="slide-inner">
+      <div class="phase-badge" style="background: rgba(255,255,255,0.2); color: white;">Phase 2: Protect</div>
+      <h1>Risks and How<br>to Manage Them</h1>
+      <p class="subtitle" style="max-width: 640px; margin: 0 auto;">The responsibility layer. Here's what can go wrong<br>and what to do about it.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Bias -->
+  <div class="slide bg-warm-white" data-index="1">
+    <div class="slide-inner left-align">
+      <div class="risk-layout">
+        <div class="risk-counter">1</div>
+        <div class="risk-number">Risk 1 of 7</div>
+        <div class="risk-title">Bias</div>
+        <p class="risk-desc">AI learns from human text. That text carries human biases. Western, English-language perspectives dominate. Indigenous knowledge, minority perspectives, and non-English-speaking cultures are underrepresented or missing.</p>
+        <div class="action-card">
+          <div class="action-card-label">What to do about it</div>
+          <p>Don't treat AI output as neutral or balanced. Read it with the same critical eye you'd apply to any single source. If the task involves diverse perspectives, bring those perspectives in yourself.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Copyright -->
+  <div class="slide bg-red-soft" data-index="2">
+    <div class="slide-inner left-align">
+      <div class="risk-layout">
+        <div class="risk-counter">2</div>
+        <div class="risk-number">Risk 2 of 7</div>
+        <div class="risk-title">Copyright</div>
+        <p class="risk-desc">Pasting copyrighted material in may breach the Copyright Act 1994. AI can reproduce chunks resembling its training data. Who owns AI-generated content hasn't been tested in NZ courts.</p>
+        <div class="action-card-alt">
+          <div class="action-card-label">What to do about it</div>
+          <p>Don't paste in material you don't have the right to share. Treat AI output as a starting point you revise and make your own &mdash; not finished work you claim outright. Be upfront about AI's role.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Over-reliance and deskilling -->
+  <div class="slide bg-warm-white" data-index="3">
+    <div class="slide-inner left-align">
+      <div class="risk-layout">
+        <div class="risk-counter">3</div>
+        <div class="risk-number">Risk 3 of 7</div>
+        <div class="risk-title">Over-reliance &amp; deskilling</div>
+        <p class="risk-desc">If AI produces every first draft, every summary, every plan &mdash; the underlying skills start to fade. Writing, analysis, and critical thinking stay sharp through practice. Stop doing them, and they get rusty.</p>
+        <div class="action-card">
+          <div class="action-card-label">What to do about it</div>
+          <p>Be deliberate about when you use AI and when you do the work yourself. Use it to accelerate tasks you already know how to do &mdash; not as a substitute for learning. If you can't start without it, that's a signal to step back.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Transparency and trust -->
+  <div class="slide bg-red-soft" data-index="4">
+    <div class="slide-inner left-align">
+      <div class="risk-layout">
+        <div class="risk-counter">4</div>
+        <div class="risk-number">Risk 4 of 7</div>
+        <div class="risk-title">Transparency &amp; trust</div>
+        <p class="risk-desc">When someone reads a document or acts on a recommendation, they assume a human wrote it. If AI shaped the substance and the other person didn't know &mdash; that's a trust issue.</p>
+        <div class="action-card-alt">
+          <div class="action-card-label">What to do about it</div>
+          <p>Develop a clear standard for when to disclose AI use. Rule of thumb: if the other person's trust depends on believing a human wrote it, you should disclose.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Privacy and data -->
+  <div class="slide bg-warm-white" data-index="5">
+    <div class="slide-inner left-align">
+      <div class="risk-layout">
+        <div class="risk-counter">5</div>
+        <div class="risk-number">Risk 5 of 7</div>
+        <div class="risk-title">Privacy &amp; data</div>
+        <p class="risk-desc">Anything you type may be stored, logged, or used to train the model. The Privacy Act 2020 applies. The Office of the Privacy Commissioner expects: senior leadership approval, Privacy Impact Assessments, and confirmed data handling before adoption.</p>
+        <div class="action-card">
+          <div class="action-card-label">What to do about it</div>
+          <p>Never put personal, confidential, or sensitive information into any AI tool unless you've confirmed the provider doesn't retain it. Conduct a Privacy Impact Assessment before organisational adoption.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Equity and access -->
+  <div class="slide bg-red-soft" data-index="6">
+    <div class="slide-inner left-align">
+      <div class="risk-layout">
+        <div class="risk-counter">6</div>
+        <div class="risk-number">Risk 6 of 7</div>
+        <div class="risk-title">Equity &amp; access</div>
+        <p class="risk-desc">The best AI tools sit behind paid subscriptions. Free tools have higher error rates, weaker safety, and fewer features. This creates a two-tier system. If you assume everyone has the same access, you're building in inequality.</p>
+        <div class="action-card-alt">
+          <div class="action-card-label">What to do about it</div>
+          <p>Don't assume equal access. If AI is part of a workflow or policy, make sure everyone affected has access to tools that are safe enough. Factor in the cost of equitable access when planning.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: Maori data sovereignty -->
+  <div class="slide bg-warm-white" data-index="7">
+    <div class="slide-inner left-align">
+      <div class="risk-layout">
+        <div class="risk-counter">7</div>
+        <div class="risk-number">Risk 7 of 7</div>
+        <div class="risk-title">M&#257;ori data sovereignty</div>
+        <p class="risk-desc">AI models may include m&#257;tauranga M&#257;ori and te reo M&#257;ori scraped without consent. When AI reproduces this material, it does so without understanding its cultural significance or use protocols. This is a Te Tiriti o Waitangi issue.</p>
+        <div class="action-card">
+          <div class="action-card-label">What to do about it</div>
+          <p>Do not use AI to generate, interpret, or remix m&#257;tauranga M&#257;ori or culturally significant material without appropriate guidance and authority. If your work intersects with M&#257;ori communities, engage with M&#257;ori about how AI is being used.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: Key landing point -->
+  <div class="slide bg-charcoal" data-index="8">
+    <div class="section-num-large" style="color: rgba(255,255,255,0.06);">6</div>
+    <div class="slide-inner">
+      <div class="phase-badge" style="background: rgba(194,91,74,0.3); color: #E88B7D;">Key Landing Point</div>
+      <div class="pull-quote red-bar" style="color: var(--warm-white); font-size: 2.6rem;">
+        A human must always<br>be in the loop.
+      </div>
+      <p class="body-text" style="color: rgba(255,255,255,0.6); margin-top: 40px; max-width: 700px; margin-left: auto; margin-right: auto; text-align: center; font-size: 1.25rem;">
+        The pattern is the same across all seven risks: understand the risk, put a human safeguard in place, and take responsibility for the output.
+      </p>
+      <p class="body-text" style="color: rgba(255,255,255,0.4); margin-top: 20px; max-width: 700px; margin-left: auto; margin-right: auto; text-align: center; font-size: 1.1rem;">
+        The technology doesn't manage its own risks. It doesn't know when it's wrong, biased, or breaching someone's privacy. That's your job. Every time.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation bar -->
+<nav class="nav-bar">
+  <a href="../index.html">&larr; Back to Journey</a>
+  <div class="nav-centre">
+    <button class="nav-btn" id="prevBtn" aria-label="Previous slide">&larr;</button>
+    <span class="slide-counter" id="slideCounter">1 / 9</span>
+    <button class="nav-btn" id="nextBtn" aria-label="Next slide">&rarr;</button>
+  </div>
+  <span style="width: 120px;"></span>
+</nav>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const counter = document.getElementById('slideCounter');
+  const progress = document.getElementById('progressBar');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function goTo(index) {
+    if (index < 0 || index >= total) return;
+    const old = current;
+    current = index;
+
+    slides.forEach((s, i) => {
+      s.classList.remove('active', 'exit-left');
+      if (i < current) s.style.transform = 'translateX(-60px)';
+      else if (i > current) s.style.transform = 'translateX(60px)';
+    });
+
+    requestAnimationFrame(() => {
+      slides[current].classList.add('active');
+      slides[current].style.transform = '';
+    });
+
+    counter.textContent = (current + 1) + ' / ' + total;
+    progress.style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', function(e) {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 60) { diff > 0 ? next() : prev(); }
+  });
+
+  progress.style.width = (1 / total * 100) + '%';
+})();
+</script>
+
+</body>
+</html>

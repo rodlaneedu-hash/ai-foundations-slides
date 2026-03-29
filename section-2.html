@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 2: How Generative AI Works — AI Foundations Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #1B6B7D;
+    --teal-dark: #145662;
+    --teal-light: #E8F4F6;
+    --green: #78C7A4;
+    --green-light: #E6F5EE;
+    --charcoal: #222222;
+    --grey: #4B5563;
+    --warm-white: #FAFAF8;
+    --amber: #A67B00;
+    --amber-light: #FFF8E7;
+    --myth-bg: #1a1a2e;
+    --myth-accent: #e74c6f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { overflow: hidden; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--warm-white);
+    color: var(--charcoal);
+    overflow: hidden;
+  }
+
+  /* ---- SLIDE SYSTEM ---- */
+  .deck {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px 80px;
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  /* ---- NAV ---- */
+  .nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: white;
+    border-top: 1px solid #E5E7EB;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    z-index: 100;
+  }
+
+  .nav-bar a.back {
+    font-size: 0.82rem;
+    color: var(--teal);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .nav-bar a.back:hover { text-decoration: underline; }
+
+  .nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-controls button {
+    background: none;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    color: var(--grey);
+  }
+
+  .nav-controls button:hover {
+    background: var(--teal-light);
+    border-color: var(--teal);
+    color: var(--teal);
+  }
+
+  .nav-controls button:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .nav-controls button:disabled:hover {
+    background: none;
+    border-color: #D1D5DB;
+    color: var(--grey);
+  }
+
+  .progress {
+    font-size: 0.82rem;
+    color: var(--grey);
+    font-weight: 600;
+    min-width: 54px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .progress-bar-track {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #E5E7EB;
+    z-index: 100;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--teal);
+    transition: width 0.4s ease;
+  }
+
+  /* ---- TYPOGRAPHY ---- */
+  h1.slide-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3.4rem;
+    color: var(--teal);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  h2.slide-heading {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.6rem;
+    color: var(--charcoal);
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    margin-bottom: 24px;
+    max-width: 800px;
+    text-align: center;
+  }
+
+  .slide-body {
+    font-size: 1.45rem;
+    color: var(--grey);
+    line-height: 1.6;
+    max-width: 720px;
+    text-align: center;
+  }
+
+  .slide-body strong { color: var(--charcoal); font-weight: 700; }
+
+  .phase-badge {
+    display: inline-block;
+    background: var(--teal-light);
+    color: var(--teal);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+  }
+
+  .big-number {
+    font-family: 'DM Serif Display', serif;
+    font-size: 8rem;
+    color: var(--teal);
+    opacity: 0.1;
+    position: absolute;
+    top: 30px;
+    right: 56px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  /* ---- BUILDING BLOCK CARD ---- */
+  .bb-card {
+    background: white;
+    border-radius: 16px;
+    border: 2px solid #E5E7EB;
+    padding: 44px 52px;
+    max-width: 760px;
+    width: 100%;
+    text-align: left;
+  }
+
+  .bb-card .bb-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: white;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    margin-bottom: 16px;
+  }
+
+  .bb-card .bb-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--teal);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .bb-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem;
+    color: var(--charcoal);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .bb-card p {
+    font-size: 1.3rem;
+    color: var(--grey);
+    line-height: 1.55;
+  }
+
+  .bb-card p + p { margin-top: 12px; }
+
+  /* ---- MYTH / MISCONCEPTION SLIDE ---- */
+  .slide-myth {
+    background: var(--myth-bg);
+  }
+
+  .myth-container {
+    max-width: 760px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .myth-label {
+    display: inline-block;
+    background: rgba(231, 76, 111, 0.15);
+    color: var(--myth-accent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+  }
+
+  .myth-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    color: white;
+    line-height: 1.25;
+    margin-bottom: 36px;
+    font-style: italic;
+  }
+
+  .myth-quote::before { content: '\201C'; }
+  .myth-quote::after { content: '\201D'; }
+
+  .myth-divider {
+    width: 60px;
+    height: 3px;
+    background: var(--green);
+    margin: 0 auto 32px;
+    border-radius: 2px;
+  }
+
+  .myth-truth {
+    font-size: 1.35rem;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.6;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .myth-truth strong {
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  /* ---- LANDING SLIDE ---- */
+  .landing-card {
+    background: var(--teal);
+    border-radius: 20px;
+    padding: 56px 64px;
+    max-width: 780px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .landing-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    color: white;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+
+  .landing-card p {
+    font-size: 1.25rem;
+    color: rgba(255,255,255,0.88);
+    line-height: 1.6;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  .landing-card p + p { margin-top: 16px; }
+
+  .landing-card .throughline {
+    display: inline-block;
+    margin-top: 28px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 100px;
+    padding: 10px 24px;
+    font-size: 1.1rem;
+    color: white;
+    font-weight: 700;
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 768px) {
+    .slide { padding: 36px 24px 72px; }
+    h1.slide-title { font-size: 2.2rem; }
+    h2.slide-heading { font-size: 1.9rem; }
+    .slide-body { font-size: 1.15rem; }
+    .bb-card { padding: 28px 28px; }
+    .bb-card h2 { font-size: 1.7rem; }
+    .bb-card p { font-size: 1.1rem; }
+    .myth-quote { font-size: 1.8rem; }
+    .myth-truth { font-size: 1.1rem; }
+    .big-number { font-size: 5rem; top: 16px; right: 20px; }
+    .landing-card { padding: 36px 28px; }
+    .landing-card h2 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar-track">
+  <div class="progress-bar-fill" id="progressFill"></div>
+</div>
+
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: TITLE -->
+  <div class="slide active" data-slide="0">
+    <div class="big-number">2</div>
+    <span class="phase-badge">Phase 1 &middot; Understand</span>
+    <h1 class="slide-title">How Generative AI Works</h1>
+    <p class="slide-body">Six building blocks. Each one paired with the misconception it dissolves.</p>
+  </div>
+
+  <!-- SLIDE 2: BB1 — TRAINING DATA -->
+  <div class="slide" data-slide="1">
+    <div class="bb-card">
+      <div class="bb-num">1</div>
+      <div class="bb-label">Building Block</div>
+      <h2>Training data &mdash; patterns</h2>
+      <p>Generative AI is trained on <strong>massive amounts of text</strong> &mdash; books, websites, articles, code.</p>
+      <p>During training, it learns <strong>patterns</strong>: which words and ideas tend to appear together, in what order, in what situations.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: MYTH 1 -->
+  <div class="slide slide-myth" data-slide="2">
+    <div class="myth-container">
+      <div class="myth-label">Misconception dissolved</div>
+      <div class="myth-quote">AI has been programmed with knowledge and facts.</div>
+      <div class="myth-divider"></div>
+      <p class="myth-truth">It hasn't. It has <strong>patterns</strong>. No one sat down and taught it that Wellington is the capital of New Zealand &mdash; it encountered that pattern frequently enough in training data to reproduce it.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: BB2 — TOKEN PREDICTION -->
+  <div class="slide" data-slide="3">
+    <div class="bb-card">
+      <div class="bb-num">2</div>
+      <div class="bb-label">Building Block</div>
+      <h2>Token prediction</h2>
+      <p>When you give it a prompt, it generates a response <strong>one word at a time</strong>, each time asking: <em>"Given everything so far, what word should come next?"</em></p>
+      <p>It does this thousands of times to produce a single response.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: MYTH 2 -->
+  <div class="slide slide-myth" data-slide="4">
+    <div class="myth-container">
+      <div class="myth-label">Misconception dissolved</div>
+      <div class="myth-quote">AI understands what it's saying.</div>
+      <div class="myth-divider"></div>
+      <p class="myth-truth">It doesn't. It's predicting <strong>what comes next</strong> based on patterns. The output reads as if it understands because human language follows patterns &mdash; and the model is very good at reproducing them. But there is <strong>no comprehension</strong> behind it.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: BB3 — NOT THE SAME ANSWER TWICE -->
+  <div class="slide" data-slide="5">
+    <div class="bb-card">
+      <div class="bb-num">3</div>
+      <div class="bb-label">Building Block</div>
+      <h2>It doesn't give the same answer twice</h2>
+      <p>There's a degree of <strong>randomness</strong> in how it picks the next word. The same prompt can produce different outputs each time.</p>
+      <p>It's not retrieving a stored answer &mdash; it's <strong>generating a new one every time</strong>.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: MYTH 3 -->
+  <div class="slide slide-myth" data-slide="6">
+    <div class="myth-container">
+      <div class="myth-label">Misconception dissolved</div>
+      <div class="myth-quote">There's a right answer in there if I ask the right way.</div>
+      <div class="myth-divider"></div>
+      <p class="myth-truth">There isn't. Every response is <strong>freshly generated</strong>. This is also why two people can get different answers to the same question.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: BB4 — NO MEMORY, NO KNOWLEDGE, NO REASONING -->
+  <div class="slide" data-slide="7">
+    <div class="bb-card">
+      <div class="bb-num">4</div>
+      <div class="bb-label">Building Block</div>
+      <h2>No memory. No knowledge. No reasoning.</h2>
+      <p>No access to the internet (unless given tools). No memory between conversations (unless designed to). Cannot verify its own claims.</p>
+      <p>It produces text that <strong>looks like reasoning</strong> because humans reason using patterns of language &mdash; and the AI is very good at copying those patterns.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: MYTH 4 -->
+  <div class="slide slide-myth" data-slide="8">
+    <div class="myth-container">
+      <div class="myth-label">Misconception dissolved</div>
+      <div class="myth-quote">AI knows things. AI is always right.</div>
+      <div class="myth-divider"></div>
+      <p class="myth-truth">It will state a falsehood with the <strong>same confidence as a fact</strong>, because sounding confident is just another pattern it learned. This is called <strong>hallucination</strong> &mdash; and it won't go away. It's inherent to how the technology works.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: BB5 — NOT A SEARCH ENGINE -->
+  <div class="slide" data-slide="9">
+    <div class="bb-card">
+      <div class="bb-num">5</div>
+      <div class="bb-label">Building Block</div>
+      <h2>It's not a search engine</h2>
+      <p>Google <strong>searches an index</strong> of web pages and shows you links to information that already exists.</p>
+      <p>A generative AI tool <strong>constructs an answer</strong> that sounds right, rather than retrieving a specific page. If you ask for references, it may invent convincing ones that don't exist.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: MYTH 5 -->
+  <div class="slide slide-myth" data-slide="10">
+    <div class="myth-container">
+      <div class="myth-label">Misconception dissolved</div>
+      <div class="myth-quote">I asked AI, and it said...</div>
+      <div class="myth-divider"></div>
+      <p class="myth-truth">That is <strong>not the same</strong> as "I looked it up and found..." Treating AI output as a retrieved fact is the single fastest way to get burned. <strong>If you need a fact, go to the source.</strong></p>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: BB6 — KNOWLEDGE CUTOFF -->
+  <div class="slide" data-slide="11">
+    <div class="bb-card">
+      <div class="bb-num">6</div>
+      <div class="bb-label">Building Block &amp; Misconception</div>
+      <h2>Its knowledge has a use-by date</h2>
+      <p>Every model was trained on data up to a specific point &mdash; its <strong>knowledge cutoff</strong>. It doesn't know what happened after that date.</p>
+      <p>If you ask about recent events, it will either say it doesn't know &mdash; or more dangerously, <strong>generate a plausible-sounding answer based on older patterns</strong>.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 13: KEY LANDING POINT -->
+  <div class="slide" data-slide="12">
+    <div class="landing-card">
+      <h2>A human must always be in the loop.</h2>
+      <p>Generative AI works by predicting patterns. That's all it does. It does not know, understand, reason, or verify.</p>
+      <p>Every strength and every risk flows from this single fact.</p>
+      <div class="throughline">Checking. Interpreting. Every time.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAVIGATION -->
+<nav class="nav-bar">
+  <a href="index.html" class="back">&larr; Back to Journey</a>
+  <div class="nav-controls">
+    <button id="prevBtn" aria-label="Previous slide" disabled>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="progress" id="progressText">1 / 13</span>
+    <button id="nextBtn" aria-label="Next slide">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M7 4l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</nav>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const progressText = document.getElementById('progressText');
+  const progressFill = document.getElementById('progressFill');
+
+  function goTo(index) {
+    if (index < 0 || index >= total) return;
+    slides.forEach((s, i) => {
+      s.classList.remove('active');
+      if (i === index) s.classList.add('active');
+    });
+    current = index;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+    progressText.textContent = (current + 1) + ' / ' + total;
+    progressFill.style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goTo(current - 1); }
+  });
+
+  document.getElementById('deck').addEventListener('click', (e) => {
+    if (e.target.closest('.nav-bar')) return;
+    const x = e.clientX;
+    if (x < window.innerWidth * 0.3) goTo(current - 1);
+    else goTo(current + 1);
+  });
+
+  progressFill.style.width = (1 / total * 100) + '%';
+})();
+</script>
+
+</body>
+</html>

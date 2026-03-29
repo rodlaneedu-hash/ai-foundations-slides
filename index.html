@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Foundations — Slide View</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #1B6B7D;
+    --teal-light: #E8F4F6;
+    --teal-mid: #2A8A9E;
+    --green: #78C7A4;
+    --green-light: #E6F5EE;
+    --charcoal: #222222;
+    --grey: #4B5563;
+    --grey-light: #F3F4F6;
+    --warm-white: #FAFAF8;
+    --amber: #A67B00;
+    --amber-light: #FFF8E7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--warm-white);
+    color: var(--charcoal);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 40px 60px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    color: var(--teal);
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  .header .subtitle {
+    font-size: 1.05rem;
+    color: var(--grey);
+    font-weight: 400;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  .slide-badge {
+    display: inline-block;
+    background: var(--teal);
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 100px;
+    margin-bottom: 12px;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 24px;
+    font-size: 0.85rem;
+    color: var(--teal);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Journey container */
+  .journey {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* Phase groups */
+  .phase {
+    position: relative;
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .phase-label {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 24px 16px;
+    text-align: center;
+  }
+
+  .phase-label .phase-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
+    color: var(--teal);
+    margin-bottom: 2px;
+  }
+
+  .phase-label .phase-desc {
+    font-size: 0.75rem;
+    color: var(--grey);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 600;
+  }
+
+  /* Vertical connector line */
+  .phase-label::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 24px;
+    background: var(--green);
+  }
+
+  .phase:last-child .phase-label::after {
+    display: none;
+  }
+
+  /* Section cards area */
+  .phase-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 0;
+  }
+
+  /* Individual section card */
+  a.section-card {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 14px;
+    align-items: start;
+    padding: 16px 20px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #E5E7EB;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  a.section-card:hover {
+    border-color: var(--teal);
+    box-shadow: 0 2px 12px rgba(27, 107, 125, 0.08);
+  }
+
+  a.section-card::after {
+    content: 'View slides \2192';
+    grid-column: 2;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--teal);
+    margin-top: 4px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+
+  a.section-card:hover::after {
+    opacity: 1;
+  }
+
+  .section-num {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .phase-understand .section-num { background: var(--teal); }
+  .phase-decide .section-num { background: var(--amber); }
+  .phase-engage .section-num { background: var(--teal-mid); }
+  .phase-protect .section-num { background: #C25B4A; }
+  .phase-skills .section-num { background: var(--green); color: var(--charcoal); }
+
+  .section-content h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 3px;
+    line-height: 1.3;
+  }
+
+  .section-content p {
+    font-size: 0.82rem;
+    color: var(--grey);
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  .section-content .key-concepts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 8px;
+  }
+
+  .tag {
+    font-size: 0.7rem;
+    padding: 3px 9px;
+    border-radius: 100px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .phase-understand .tag { background: var(--teal-light); color: var(--teal); }
+  .phase-decide .tag { background: var(--amber-light); color: var(--amber); }
+  .phase-engage .tag { background: #E8F4F6; color: var(--teal-mid); }
+  .phase-protect .tag { background: #FBEAE8; color: #C25B4A; }
+  .phase-skills .tag { background: var(--green-light); color: #2D7A54; }
+
+  /* Throughline banner */
+  .throughline {
+    margin-top: 36px;
+    padding: 20px 28px;
+    background: var(--teal);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .throughline-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .throughline-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .throughline-text {
+    color: white;
+  }
+
+  .throughline-text strong {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.05rem;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .throughline-text p {
+    font-size: 0.82rem;
+    opacity: 0.9;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  /* Flow arrows between phases */
+  .phase-connector {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    height: 24px;
+  }
+
+  .phase-connector .connector-line {
+    display: flex;
+    justify-content: center;
+  }
+
+  .phase-connector .connector-line::after {
+    content: '';
+    width: 2px;
+    height: 100%;
+    background: var(--green);
+  }
+
+  .phase-connector .connector-arrow {
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+  }
+
+  .connector-arrow svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--green);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #E5E7EB;
+    font-size: 0.75rem;
+    color: var(--grey);
+  }
+
+  /* Print styles */
+  @media print {
+    body { background: white; }
+    .page { padding: 24px 20px; }
+    .section-card { break-inside: avoid; }
+    .section-card:hover { border-color: #E5E7EB; box-shadow: none; }
+  }
+
+  @media (max-width: 700px) {
+    .phase { grid-template-columns: 1fr; }
+    .phase-label { padding: 12px 0 4px; }
+    .phase-connector { grid-template-columns: 1fr; height: 16px; }
+    .phase-connector .connector-line { display: none; }
+    .page { padding: 24px 16px; }
+    .header h1 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <a href="../index.html" class="back-link">&larr; Back to text view</a>
+
+  <div class="header">
+    <div class="slide-badge">Slide View</div>
+    <h1>AI Foundations — Learning Journey</h1>
+    <p class="subtitle">Nine sections, progressive build-up. Each concept earns the next.</p>
+  </div>
+
+  <div class="journey">
+
+    <!-- PHASE 1: UNDERSTAND -->
+    <div class="phase phase-understand">
+      <div class="phase-label">
+        <div class="phase-desc">Phase 1</div>
+        <div class="phase-name">Understand</div>
+      </div>
+      <div class="phase-sections">
+
+        <a href="section-1.html" class="section-card">
+          <div class="section-num">1</div>
+          <div class="section-content">
+            <h3>What is AI?</h3>
+            <p>The four key distinctions: AI, narrow AI, general AI, and generative AI.</p>
+            <div class="key-concepts">
+              <span class="tag">Narrow vs General</span>
+              <span class="tag">Generative AI defined</span>
+              <span class="tag">Multiple tools</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="section-2.html" class="section-card">
+          <div class="section-num">2</div>
+          <div class="section-content">
+            <h3>How Generative AI Works</h3>
+            <p>Six building blocks — each paired with the misconception it dissolves.</p>
+            <div class="key-concepts">
+              <span class="tag">Patterns, not knowledge</span>
+              <span class="tag">Token prediction</span>
+              <span class="tag">Hallucination</span>
+              <span class="tag">Not a search engine</span>
+              <span class="tag">Knowledge cutoff</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="section-3.html" class="section-card">
+          <div class="section-num">3</div>
+          <div class="section-content">
+            <h3>What It's Good At — and Where It Falls Over</h3>
+            <p>Every strength has a flip side. Same mechanics, different outcome.</p>
+            <div class="key-concepts">
+              <span class="tag">Fast but not right</span>
+              <span class="tag">Fluent but not accurate</span>
+              <span class="tag">Versatile but no context</span>
+              <span class="tag">Adapts but forgets</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="phase-connector">
+      <div class="connector-line"></div>
+      <div class="connector-arrow">
+        <svg viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12"/></svg>
+      </div>
+    </div>
+
+    <!-- PHASE 2: DECIDE -->
+    <div class="phase phase-decide">
+      <div class="phase-label">
+        <div class="phase-desc">Phase 2</div>
+        <div class="phase-name">Decide</div>
+      </div>
+      <div class="phase-sections">
+
+        <a href="section-4.html" class="section-card">
+          <div class="section-num">4</div>
+          <div class="section-content">
+            <h3>When to Use It — and When Not To</h3>
+            <p>A practical decision framework: does this task match what AI is good at, and can I manage the limitations?</p>
+            <div class="key-concepts">
+              <span class="tag">Can you verify?</span>
+              <span class="tag">What are the stakes?</span>
+              <span class="tag">Personal data?</span>
+              <span class="tag">Judgment about people?</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="phase-connector">
+      <div class="connector-line"></div>
+      <div class="connector-arrow">
+        <svg viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12"/></svg>
+      </div>
+    </div>
+
+    <!-- PHASE 3: ENGAGE -->
+    <div class="phase phase-engage">
+      <div class="phase-label">
+        <div class="phase-desc">Phase 3</div>
+        <div class="phase-name">Engage</div>
+      </div>
+      <div class="phase-sections">
+
+        <a href="section-5.html" class="section-card">
+          <div class="section-num">5</div>
+          <div class="section-content">
+            <h3>Three Ways to Use Generative AI</h3>
+            <p>Choose the right kind of engagement: automation, augmentation, or agency. Chat vs agents.</p>
+            <div class="key-concepts">
+              <span class="tag">Do this for me</span>
+              <span class="tag">Think with me</span>
+              <span class="tag">Act on my behalf</span>
+              <span class="tag">Scriptwriter to Director</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="phase-connector">
+      <div class="connector-line"></div>
+      <div class="connector-arrow">
+        <svg viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12"/></svg>
+      </div>
+    </div>
+
+    <!-- PHASE 4: PROTECT -->
+    <div class="phase phase-protect">
+      <div class="phase-label">
+        <div class="phase-desc">Phase 4</div>
+        <div class="phase-name">Protect</div>
+      </div>
+      <div class="phase-sections">
+
+        <a href="section-6.html" class="section-card">
+          <div class="section-num">6</div>
+          <div class="section-content">
+            <h3>Risks and How to Manage Them</h3>
+            <p>Seven risks, each with a practical mitigation. NZ legal and regulatory context included.</p>
+            <div class="key-concepts">
+              <span class="tag">Bias</span>
+              <span class="tag">Copyright</span>
+              <span class="tag">Over-reliance</span>
+              <span class="tag">Privacy (OPC)</span>
+              <span class="tag">Equity</span>
+              <span class="tag">Maori data sovereignty</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="phase-connector">
+      <div class="connector-line"></div>
+      <div class="connector-arrow">
+        <svg viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12"/></svg>
+      </div>
+    </div>
+
+    <!-- PHASE 5: BUILD SKILLS -->
+    <div class="phase phase-skills">
+      <div class="phase-label">
+        <div class="phase-desc">Phase 5</div>
+        <div class="phase-name">Build Skills</div>
+      </div>
+      <div class="phase-sections">
+
+        <a href="section-7.html" class="section-card">
+          <div class="section-num">7</div>
+          <div class="section-content">
+            <h3>Core Skills — The 4Ds</h3>
+            <p>Delegate, Describe, Discern, apply Diligence. An iterative cycle, not a linear sequence.</p>
+            <div class="key-concepts">
+              <span class="tag">Delegation (Strategy)</span>
+              <span class="tag">Description (Communication)</span>
+              <span class="tag">Discernment (Evaluation)</span>
+              <span class="tag">Diligence (Responsibility)</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="section-8.html" class="section-card">
+          <div class="section-num">8</div>
+          <div class="section-content">
+            <h3>Prompting Essentials</h3>
+            <p>Six techniques for effective prompts. When output is weak, diagnose which one is missing.</p>
+            <div class="key-concepts">
+              <span class="tag">Context</span>
+              <span class="tag">Examples</span>
+              <span class="tag">Constraints</span>
+              <span class="tag">Steps</span>
+              <span class="tag">Think first</span>
+              <span class="tag">Role, style, tone</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="section-9.html" class="section-card">
+          <div class="section-num">9</div>
+          <div class="section-content">
+            <h3>Advanced Prompting</h3>
+            <p>Multi-stage prompting, iteration, constraints, the diagnostic habit (GCSE), and using AI to plan your approach.</p>
+            <div class="key-concepts">
+              <span class="tag">Multi-stage</span>
+              <span class="tag">Iteration</span>
+              <span class="tag">Guardrails</span>
+              <span class="tag">GCSE diagnostic</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Throughline -->
+  <div class="throughline">
+    <div class="throughline-icon">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg>
+    </div>
+    <div class="throughline-text">
+      <strong>A human must always be in the loop</strong>
+      <p>Checking, interpreting, and taking responsibility for the output. Not sometimes. Every time. This principle runs through every section of the journey.</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    AI Foundations Benchmark &mdash; GovHub AI Services &mdash; 2026
+  </div>
+
+</div>
+
+<script>
+document.querySelectorAll('a.section-card').forEach(function(card) {
+  card.addEventListener('click', function(e) {
+    e.preventDefault();
+    window.location.href = card.getAttribute('href');
+  });
+});
+</script>
+</body>
+</html>

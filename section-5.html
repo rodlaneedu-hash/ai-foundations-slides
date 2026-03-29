@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 5: Three Ways to Use Generative AI | AI Foundations Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #1B6B7D;
+    --teal-mid: #2A8A9E;
+    --teal-light: #E8F4F6;
+    --green: #78C7A4;
+    --green-dark: #2D7A54;
+    --charcoal: #222222;
+    --grey: #4B5563;
+    --warm-white: #FAFAF8;
+    --amber: #A67B00;
+    --red: #C25B4A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; overflow: hidden; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--charcoal);
+    background: var(--charcoal);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Slide container */
+  .slides-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+    overflow-y: auto;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  .slide.exit-left {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  .slide-inner {
+    max-width: 1000px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .slide-inner.left-align { text-align: left; }
+
+  /* Typography */
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3.6rem;
+    line-height: 1.15;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.8rem;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    line-height: 1.25;
+    margin-bottom: 16px;
+  }
+
+  .body-text {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    max-width: 800px;
+  }
+
+  .subtitle {
+    font-size: 1.3rem;
+    font-weight: 500;
+    line-height: 1.5;
+    opacity: 0.85;
+  }
+
+  /* Phase badge */
+  .phase-badge {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 6px 18px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+  }
+
+  /* Section number watermark */
+  .section-num-large {
+    font-family: 'DM Serif Display', serif;
+    font-size: 8rem;
+    line-height: 1;
+    opacity: 0.12;
+    position: absolute;
+    top: 40px;
+    right: 60px;
+  }
+
+  /* Mode number */
+  .mode-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 7rem;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .mode-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    margin-bottom: 20px;
+    opacity: 0.7;
+  }
+
+  /* Quote tag */
+  .mode-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    font-style: italic;
+    margin-bottom: 28px;
+    opacity: 0.9;
+  }
+
+  /* Example pills */
+  .example-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .example-pill {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    line-height: 1.4;
+    text-align: left;
+  }
+
+  .bg-warm-white .example-pill,
+  .bg-teal-soft .example-pill {
+    background: rgba(42,138,158,0.08);
+    border: 1px solid rgba(42,138,158,0.15);
+    color: var(--charcoal);
+  }
+
+  /* When it works / doesn't */
+  .works-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    max-width: 860px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .works-card {
+    border-radius: 16px;
+    padding: 32px;
+  }
+
+  .works-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  .works-card p {
+    font-size: 1.2rem;
+    line-height: 1.55;
+  }
+
+  .works-yes {
+    background: rgba(120,199,164,0.12);
+    border: 1px solid rgba(120,199,164,0.25);
+  }
+
+  .works-yes h3 { color: var(--green-dark); }
+
+  .works-no {
+    background: rgba(194,91,74,0.08);
+    border: 1px solid rgba(194,91,74,0.2);
+  }
+
+  .works-no h3 { color: var(--red); }
+
+  /* Comparison layout */
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 32px;
+    align-items: center;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .compare-card {
+    border-radius: 16px;
+    padding: 36px;
+  }
+
+  .compare-arrow {
+    font-size: 2.5rem;
+    color: var(--teal-mid);
+    opacity: 0.5;
+  }
+
+  /* Progression visual */
+  .progression {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    justify-content: center;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .progression-step {
+    flex: 1;
+    text-align: center;
+    padding: 28px 20px;
+    border-radius: 16px;
+    position: relative;
+  }
+
+  .progression-step .step-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+  }
+
+  .progression-step .step-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .progression-step .step-tag {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    margin-top: 6px;
+  }
+
+  .progression-arrow {
+    font-size: 1.8rem;
+    color: var(--teal-mid);
+    opacity: 0.4;
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+
+  /* Pull quote */
+  .pull-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    line-height: 1.35;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    padding-left: 32px;
+    text-align: left;
+  }
+
+  .pull-quote::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    border-radius: 3px;
+  }
+
+  .pull-quote.teal-bar::before { background: var(--teal-mid); }
+
+  /* Navigation */
+  .nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    background: rgba(34,34,34,0.92);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
+
+  .nav-bar a, .nav-bar button {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
+    padding: 8px 12px;
+  }
+
+  .nav-bar a:hover, .nav-bar button:hover { color: white; }
+
+  .nav-centre {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid rgba(255,255,255,0.3) !important;
+    padding: 0 !important;
+    font-size: 1.1rem !important;
+  }
+
+  .nav-btn:hover { border-color: rgba(255,255,255,0.7) !important; }
+
+  .slide-counter {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    min-width: 56px;
+    text-align: center;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--teal-mid);
+    transition: width 0.4s ease;
+    z-index: 101;
+  }
+
+  /* Backgrounds */
+  .bg-warm-white { background: var(--warm-white); color: var(--charcoal); }
+  .bg-charcoal { background: var(--charcoal); color: var(--warm-white); }
+  .bg-teal-mid { background: var(--teal-mid); color: white; }
+  .bg-teal-dark { background: var(--teal); color: white; }
+  .bg-teal-soft { background: #EFF8FA; color: var(--charcoal); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .slide { padding: 40px 28px 80px; }
+    h1 { font-size: 2.4rem; }
+    h2 { font-size: 2rem; }
+    .body-text { font-size: 1.2rem; }
+    .mode-num { font-size: 5rem; }
+    .mode-quote { font-size: 1.5rem; }
+    .works-grid { grid-template-columns: 1fr; gap: 16px; }
+    .compare-row { grid-template-columns: 1fr; gap: 16px; }
+    .compare-arrow { transform: rotate(90deg); margin: 0 auto; }
+    .progression { flex-direction: column; gap: 8px; }
+    .progression-arrow { transform: rotate(90deg); }
+    .section-num-large { font-size: 5rem; top: 24px; right: 28px; }
+    .pull-quote { font-size: 1.8rem; }
+    .example-pill { font-size: 1rem; padding: 10px 16px; }
+  }
+
+  @media (max-width: 480px) {
+    .slide { padding: 32px 20px 80px; }
+    h1 { font-size: 1.9rem; }
+    h2 { font-size: 1.6rem; }
+    .pull-quote { font-size: 1.5rem; }
+    .works-card { padding: 24px; }
+    .works-card p { font-size: 1.05rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="slides-wrapper" id="slidesWrapper">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide bg-teal-mid active" data-index="0">
+    <div class="section-num-large" style="color: rgba(255,255,255,0.1);">5</div>
+    <div class="slide-inner">
+      <div class="phase-badge" style="background: rgba(255,255,255,0.2); color: white;">Phase 3: Engage</div>
+      <h1>Three Ways to Use<br>Generative AI</h1>
+      <p class="subtitle" style="max-width: 640px; margin: 0 auto;">The bridge from understanding to doing.<br>Once you've decided AI fits the task, choose the right kind of engagement.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Mode 1 — Automation -->
+  <div class="slide bg-warm-white" data-index="1">
+    <div class="section-num-large" style="color: var(--teal-mid);">1</div>
+    <div class="slide-inner">
+      <div class="mode-label" style="color: var(--teal-mid);">Mode 1</div>
+      <div class="mode-num" style="color: var(--teal-mid);">Automation</div>
+      <div class="mode-quote" style="color: var(--teal);">"Do this for me."</div>
+      <p class="body-text centred" style="font-size: 1.3rem; color: var(--grey); margin-bottom: 32px;">You give the AI a clear, specific instruction. It completes the task. You check the result.</p>
+      <div class="example-grid">
+        <div class="example-pill">Summarise this document into five bullet points</div>
+        <div class="example-pill">Reformat this data into a table</div>
+        <div class="example-pill">Draft a follow-up email from meeting notes</div>
+        <div class="example-pill">Translate this into plain language</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Automation — works / doesn't -->
+  <div class="slide bg-teal-soft" data-index="2">
+    <div class="slide-inner">
+      <h2 style="color: var(--teal); margin-bottom: 32px;">Automation: when it fits</h2>
+      <div class="works-grid">
+        <div class="works-card works-yes">
+          <h3>Works best when</h3>
+          <p>The task is routine, the instruction is specific, and you can check the output quickly. You're saving time on work you already know how to do.</p>
+        </div>
+        <div class="works-card works-no">
+          <h3>Doesn't work when</h3>
+          <p>The task is ambiguous, requires nuance, or you wouldn't recognise a wrong answer. Automation with no verification is just outsourcing your mistakes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Mode 2 — Augmentation -->
+  <div class="slide bg-warm-white" data-index="3">
+    <div class="section-num-large" style="color: var(--teal-mid);">2</div>
+    <div class="slide-inner">
+      <div class="mode-label" style="color: var(--teal-mid);">Mode 2</div>
+      <div class="mode-num" style="color: var(--teal-mid);">Augmentation</div>
+      <div class="mode-quote" style="color: var(--teal);">"Think with me."</div>
+      <p class="body-text centred" style="font-size: 1.3rem; color: var(--grey); margin-bottom: 32px;">You and the AI work together as thinking partners. You're not handing over a task &mdash; you're having a conversation.</p>
+      <div class="example-grid">
+        <div class="example-pill">What angles could I take for a Year 8 unit on climate change?</div>
+        <div class="example-pill">Here's my draft strategy &mdash; what am I missing?</div>
+        <div class="example-pill">Talk me through options for structuring this report</div>
+        <div class="example-pill">Challenge my assumptions about this approach</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Augmentation — works / doesn't -->
+  <div class="slide bg-teal-soft" data-index="4">
+    <div class="slide-inner">
+      <h2 style="color: var(--teal); margin-bottom: 32px;">Augmentation: when it fits</h2>
+      <div class="works-grid">
+        <div class="works-card works-yes">
+          <h3>Works best when</h3>
+          <p>The task is complex, open-ended, or creative. You have the expertise to evaluate what comes back, and you're using the AI to extend your thinking rather than replace it.</p>
+        </div>
+        <div class="works-card works-no">
+          <h3>Doesn't work when</h3>
+          <p>You're looking for a definitive answer rather than a conversation. If you defer to whatever the AI suggests, you've slipped back into automation without the verification.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Mode 3 — Agency -->
+  <div class="slide bg-warm-white" data-index="5">
+    <div class="section-num-large" style="color: var(--teal-mid);">3</div>
+    <div class="slide-inner">
+      <div class="mode-label" style="color: var(--teal-mid);">Mode 3</div>
+      <div class="mode-num" style="color: var(--teal-mid);">Agency</div>
+      <div class="mode-quote" style="color: var(--teal);">"Act on my behalf."</div>
+      <p class="body-text centred" style="font-size: 1.3rem; color: var(--grey); margin-bottom: 32px;">The AI works more independently, making decisions within boundaries you've set. You're the director, not the scriptwriter.</p>
+      <div class="example-grid">
+        <div class="example-pill">Monitor my inbox and categorise by urgency</div>
+        <div class="example-pill">Research five companies and produce a comparison brief</div>
+        <div class="example-pill">Build a first draft of this website from my spec</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Agency — works / doesn't -->
+  <div class="slide bg-teal-soft" data-index="6">
+    <div class="slide-inner">
+      <h2 style="color: var(--teal); margin-bottom: 32px;">Agency: when it fits</h2>
+      <div class="works-grid">
+        <div class="works-card works-yes">
+          <h3>Works best when</h3>
+          <p>You have a clear brief, well-defined boundaries, and a review process before anything goes live. You trust the tool enough to give it room, but you still check before it reaches anyone else.</p>
+        </div>
+        <div class="works-card works-no">
+          <h3>Doesn't work when</h3>
+          <p>The boundaries are unclear, there's no review step, or the consequences of a bad decision are significant. It will proceed with full assurance regardless of whether it's getting things right.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: Chat vs Agents -->
+  <div class="slide bg-teal-dark" data-index="7">
+    <div class="slide-inner">
+      <h2 style="margin-bottom: 36px;">Scriptwriter to Director</h2>
+      <div class="compare-row">
+        <div class="compare-card" style="background: rgba(255,255,255,0.1); border-radius: 16px;">
+          <h3 style="color: var(--green); font-size: 1.5rem;">Chat</h3>
+          <p style="font-size: 1.15rem; line-height: 1.55; color: rgba(255,255,255,0.85);">You type a prompt, read the response, and follow up. Back and forth, one message at a time. You control every step.</p>
+          <p style="font-size: 0.95rem; color: rgba(255,255,255,0.5); margin-top: 12px; margin-bottom: 0;">Automation + Augmentation</p>
+        </div>
+        <div class="compare-arrow">&rarr;</div>
+        <div class="compare-card" style="background: rgba(255,255,255,0.1); border-radius: 16px;">
+          <h3 style="color: var(--green); font-size: 1.5rem;">Agents</h3>
+          <p style="font-size: 1.15rem; line-height: 1.55; color: rgba(255,255,255,0.85);">You write standing instructions &mdash; a brief that tells the AI who it is, how to behave, what it can access, and what rules to follow.</p>
+          <p style="font-size: 0.95rem; color: rgba(255,255,255,0.5); margin-top: 12px; margin-bottom: 0;">Agency</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: Progression -->
+  <div class="slide bg-warm-white" data-index="8">
+    <div class="slide-inner">
+      <h2 style="color: var(--teal); margin-bottom: 44px;">How the three modes relate</h2>
+      <div class="progression">
+        <div class="progression-step" style="background: rgba(42,138,158,0.08);">
+          <div class="step-num" style="color: var(--teal-mid);">1</div>
+          <div class="step-label" style="color: var(--teal);">Automation</div>
+          <div class="step-tag" style="color: var(--grey);">Entry point</div>
+        </div>
+        <div class="progression-arrow">&rarr;</div>
+        <div class="progression-step" style="background: rgba(42,138,158,0.12);">
+          <div class="step-num" style="color: var(--teal-mid);">2</div>
+          <div class="step-label" style="color: var(--teal);">Augmentation</div>
+          <div class="step-tag" style="color: var(--grey);">Where the real value lives</div>
+        </div>
+        <div class="progression-arrow">&rarr;</div>
+        <div class="progression-step" style="background: rgba(42,138,158,0.18);">
+          <div class="step-num" style="color: var(--teal-mid);">3</div>
+          <div class="step-label" style="color: var(--teal);">Agency</div>
+          <div class="step-tag" style="color: var(--grey);">Where things are heading</div>
+        </div>
+      </div>
+      <p class="body-text centred" style="font-size: 1.2rem; color: var(--grey); margin-top: 36px;">You don't pick one mode. In a single session, you might automate a formatting task, augment your planning, then go back to automation. The skill is matching the mode to the task.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: Key landing point -->
+  <div class="slide bg-charcoal" data-index="9">
+    <div class="section-num-large" style="color: rgba(255,255,255,0.06);">5</div>
+    <div class="slide-inner">
+      <div class="phase-badge" style="background: rgba(42,138,158,0.3); color: #6ECAE0;">Key Landing Point</div>
+      <div class="pull-quote teal-bar" style="color: var(--warm-white); font-size: 2.2rem;">
+        Automation is the entry point.<br>Augmentation is where the real value lives.<br>Agency is where things are heading &mdash;<br><em>but only with the right guardrails.</em>
+      </div>
+      <p class="body-text" style="color: rgba(255,255,255,0.55); margin-top: 36px; max-width: 680px; margin-left: auto; margin-right: auto; text-align: center; font-size: 1.2rem;">
+        These three modes are a practical framework for deciding how to engage with AI once you've decided to use it.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation bar -->
+<nav class="nav-bar">
+  <a href="../index.html">&larr; Back to Journey</a>
+  <div class="nav-centre">
+    <button class="nav-btn" id="prevBtn" aria-label="Previous slide">&larr;</button>
+    <span class="slide-counter" id="slideCounter">1 / 10</span>
+    <button class="nav-btn" id="nextBtn" aria-label="Next slide">&rarr;</button>
+  </div>
+  <span style="width: 120px;"></span>
+</nav>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const counter = document.getElementById('slideCounter');
+  const progress = document.getElementById('progressBar');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function goTo(index) {
+    if (index < 0 || index >= total) return;
+    const old = current;
+    current = index;
+
+    slides.forEach((s, i) => {
+      s.classList.remove('active', 'exit-left');
+      if (i < current) s.style.transform = 'translateX(-60px)';
+      else if (i > current) s.style.transform = 'translateX(60px)';
+    });
+
+    requestAnimationFrame(() => {
+      slides[current].classList.add('active');
+      slides[current].style.transform = '';
+    });
+
+    counter.textContent = (current + 1) + ' / ' + total;
+    progress.style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', function(e) {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 60) { diff > 0 ? next() : prev(); }
+  });
+
+  progress.style.width = (1 / total * 100) + '%';
+})();
+</script>
+
+</body>
+</html>
